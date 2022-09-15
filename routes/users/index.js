@@ -12,5 +12,6 @@ routerUser.post('/api/user/new-user',UserController.generateUser)
 routerUser.post('/api/user/login',UserController.login)
 routerUser.put('/api/user/change-password',verifyTokenHandler,UserController.changePassword)
 routerUser.get('/api/user/get-user',verifyTokenHandler,UserController.getUser)
+routerUser.get('/api/user/get-users',verifyTokenHandler,UserController.getUsers)
 routerUser.delete('/api/user/delete-user',verifyTokenHandler,UserController.deleteUser)
 module.exports = routerUser

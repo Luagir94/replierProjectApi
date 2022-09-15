@@ -1,0 +1,16 @@
+const express = require('express')
+const Clients = require('../../controllers/clients')
+const { Router } = require('express')
+const {verifyTokenHandler} =require('../../utils/middlewares/verifyTokenHandler')
+const multer  = require('multer')
+const upload = multer({ dest: 'uploads/' })
+const ClientController = new Clients()
+const routerClient = new Router()
+
+routerClient.use(express.json())
+routerClient.use(express.urlencoded({ extended: true }))
+routerClient.post('/api/clients/new-client',verifyTokenHandler,ClientController.generateClient)
+routerClient.get('/api/clients/get-clients',verifyTokenHandler,ClientController.getClients)
+routerClient.post('/api/clients/modify-photo',verifyTokenHandler,upload.single('file'),ClientController.uploadPhoto)
+routerClient.put('/api/clients/modify-client',verifyTokenHandler,ClientController.updateClient)
+module.exports = routerClient

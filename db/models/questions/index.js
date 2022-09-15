@@ -34,10 +34,15 @@ const QuestionSchema = {
         type: DataTypes.STRING,
         field: 'submited_by',
     },
-    date: {
+    createdAt: {
         allowNull: false,
-        type: DataTypes.DATEONLY
-    }
+        type: DataTypes.DATEONLY,
+        field: 'created_at',
+    }, updatedAt: {
+        allowNull: false,
+        type: DataTypes.DATEONLY,
+        field: 'updated_at',
+    },
 }
 
 class Questions extends Model {
