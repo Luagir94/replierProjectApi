@@ -1,6 +1,6 @@
 const { UserSchema, User } = require("./users/index.js");
-const { ClientsSchema, Clients } = require('./clients/index.js')
-const { QuestionsSchema, Questions } = require('./questions/index.js')
+const { ClientsSchema, Clients, CLIENTS_TABLE } = require('./clients/index.js')
+const { QuestionsSchema, Questions,QUESTIONS_TABLE } = require('./questions/index.js')
 
 
 const setupModels = (sequelize) => {
@@ -8,6 +8,9 @@ const setupModels = (sequelize) => {
     Clients.init(ClientsSchema, Clients.config(sequelize))
     Questions.init(QuestionsSchema, Questions.config(sequelize))
    
+    Questions.associate(sequelize.models)
+    Clients.associate(sequelize.models)
+
 }
 
 module.exports = setupModels

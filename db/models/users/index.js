@@ -5,8 +5,8 @@ const UserSchema = {
     id: {
         allowNull: false,
         primaryKey: true,
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.STRING,
+        unique: true
     },
     userName :{
         allowNull: false,
@@ -32,17 +32,17 @@ const UserSchema = {
         type: DataTypes.STRING,
     } ,createdAt: {
         allowNull: false,
-        type: DataTypes.DATEONLY,
+        type: DataTypes.DATE,
         field: 'created_at',
     }, updatedAt: {
         allowNull: false,
-        type: DataTypes.DATEONLY,
+        type: DataTypes.DATE,
         field: 'updated_at',
     },
 }
 
 class User extends Model {
-    static  associations(){
+    static  associate(){
 
     }
     static config(sequelize){

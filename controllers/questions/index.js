@@ -6,25 +6,56 @@ const jwt = require("jsonwebtoken");
 require('dotenv').config()
 const cloudinary = require('../../utils/middlewares/cloudinaryUpload')
 const { v4: uuidv4 } = require('uuid');
-class Clients {
+class Questions {
     constructor() { }
-    async generateClient(req, res, next) {
-        const { name, data } = req.body;
+    async generateQuestion(req, res, next) {
+        const { clientId, title, question, answer } = req.body;
 
         const token = req.headers.authorization.split(' ')[1]
 
         jwt.verify(token, process.env.CLIENT_SECRET, async (err, decoded) => {
             const verifyUser = await models.User.findByPk(decoded.data.id)
-            console.log(verifyUser);
+
             try {
-                if (decoded.data.role === 'admin' && verifyUser) {
+                if (verifyUser) {
+    
+       
+                    
+                    
+                    const newUser = await models.Questions.create({...req.body,"id": uuidv4()})
+                    res.status(201).send({ msg: 'Preguenta creado con exito.', newUser })
+                } else {
+                    res.status(401).send('Credenciales incorrectas');
+                }
+            } catch (error) {
+                console.log(error);
+                res.status(500).send('Error inesperado, intente nuevamente.')
+            }
+        })
+
+
+
+
+    }
+    async updateQuestions(req, res, next) {
+        const { id, title, question, answer } = req.body;
+
+
+        const token = req.headers.authorization.split(' ')[1]
+
+        jwt.verify(token, process.env.CLIENT_SECRET, async (err, decoded) => {
+            const verifyUser = await models.User.findByPk(decoded.data.id)
+            try {
+                if (verifyUser) {
+                    const question = await models.Questions.findByPk(id)
+                    
                     const newEntrie = {
-                        name,
-                        data,
-                        id : uuidv4()
+                        title,
+                        question,
+                        answer
                     }
-                    const newUser = await models.Clients.create(newEntrie)
-                    res.status(201).send({ msg: 'Cliente creado con exito.', client: newUser })
+                    const updatedQ = await question.update(newEntrie)
+                    res.status(201).send({ msg: 'Cliente actualizado con exito.', updatedQ })
                 } else {
                     res.status(401).send('Credenciales incorrectas');
                 }
@@ -34,74 +65,18 @@ class Clients {
         })
 
 
-
-
     }
-    async updateClient(req, res, next) {
-        const { name, data, id } = req.body;
-
-
-        const token = req.headers.authorization.split(' ')[1]
-
-        jwt.verify(token, process.env.CLIENT_SECRET, async (err, decoded) => {
-            const verifyUser = await models.User.findByPk(decoded.data.id)
-            try {
-                if (decoded.data.role === 'admin' && verifyUser) {
-                    const client = await models.Clients.findByPk(id)
-                    console.log(client);
-                    const newEntrie = {
-                        data,
-                        name: name || client.name
-                    }
-                    console.log(newEntrie);
-                    const newUser = await client.update(newEntrie)
-                    res.status(201).send({ msg: 'Cliente actualizado con exito.', client: newUser })
-                } else {
-                    res.status(401).send('Credenciales incorrectas');
-                }
-            } catch (error) {
-                res.status(500).send('Error inesperado, intente nuevamente.')
-            }
-        })
-
-
-    }
-    async uploadPhoto(req, res, next) {
-        const token = req.headers.authorization.split(' ')[1]
-        const isVerified = jwt.verify(token, process.env.CLIENT_SECRET, async (err, decoded) => {
-            const { role, id } = decoded.data
-            try {
-                const verifyUser = await models.User.findByPk(decoded.data.id)
-                if (role === 'admin' && verifyUser) {
-                    const client = await models.Clients.findOne({ where: { id } })
-                    const uploader = async (x, y) => await cloudinary.uploadImage(x, y)
-                    const { path } = req.file
-                    const newFile = await uploader(path, 'Clients')
-                    const rta = await client.update({ logo: newFile.url })
-                    res.status(200).send('Foto actualizada correctamente.')
-
-                } else {
-                    res.status(401).send('Credenciales incorrectas');
-                }
-            } catch (error) {
-                res.status(400).send('Ha ocurrido un error con esta solicitud, intentar nuevamente')
-            }
-
-
-
-        })
-    }
-    async getClients(req, res, next) {
+    async getQuestions(req, res, next) {
         const token = req.headers.authorization.split(' ')[1]
         try {
             jwt.verify(token, process.env.CLIENT_SECRET, async (err, decoded) => {
                 const verifyUser = await models.User.findByPk(decoded.data.id)
                 if (verifyUser) {
                     if (decoded.data) {
-                        const rta = await models.Clients.findAll({ attributes: { exclude: ['createdAt', 'updatedAt'] },include:['questions'] })
+                        const rta = await models.Questions.findAll()
                         const dataToSend = rta.map(x => x.dataValues)
                         res.status(200).send(dataToSend)
-       
+
                     } else {
                         res.status(404).send('Usuario no encontrado.')
                     }
@@ -112,7 +87,7 @@ class Clients {
             res.status(404).send('Usuario no encontrado.')
         }
     }
-    async deleteClient(req, res, next) {
+    async deleteQuestions(req, res, next) {
         const { id } = req.body;
         const { error, value } = validateCreateUser(req.body);
         const token = req.headers.authorization.split(' ')[1]
@@ -120,8 +95,8 @@ class Clients {
             const verifyUser = await models.User.findByPk(decoded.data.id)
             console.log(decoded.data.role);
             if (decoded.data.role === 'admin' && verifyUser) {
-                const clientToDelete = await models.Clients.findByPk(id)
-                clientToDelete.destroy()
+                const questionToDestroy = await models.Questions.findByPk(id)
+                questionToDestroy.destroy()
                 res.status(200).send('Usuario eliminado correctamente.')
 
             } else {
@@ -131,4 +106,4 @@ class Clients {
     }
 }
 
-module.exports = Clients
+module.exports = Questions

@@ -13,4 +13,5 @@ routerClient.post('/api/clients/new-client',verifyTokenHandler,ClientController.
 routerClient.get('/api/clients/get-clients',verifyTokenHandler,ClientController.getClients)
 routerClient.post('/api/clients/modify-photo',verifyTokenHandler,upload.single('file'),ClientController.uploadPhoto)
 routerClient.put('/api/clients/modify-client',verifyTokenHandler,ClientController.updateClient)
+routerClient.delete('/api/clients/delete-client',verifyTokenHandler,ClientController.deleteClient)
 module.exports = routerClient

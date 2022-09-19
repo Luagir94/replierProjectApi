@@ -5,12 +5,13 @@ const ClientsSchema = {
     id: {
         allowNull: false,
         primaryKey: true,
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.STRING,
+        unique: true
     },
     name: {
         allowNull: false,
         type: DataTypes.STRING,
+        
     },
     data: {
         allowNull: true,
@@ -22,19 +23,19 @@ const ClientsSchema = {
     },
     createdAt: {
         allowNull: false,
-        type: DataTypes.DATEONLY,
+        type: DataTypes.DATE,
         field: 'created_at',
     },
     updatedAt: {
         allowNull: false,
-        type: DataTypes.DATEONLY,
+        type: DataTypes.DATE,
         field: 'updated_at',
     },
 }
 
 class Clients extends Model {
-    static associations(models) {
-        this.hasOne(models.questions, {
+    static associate(models) {
+        this.hasMany(models.Questions, {
             as: 'questions',
             foreignKey: 'clientId'
         });
