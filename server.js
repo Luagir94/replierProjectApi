@@ -4,10 +4,10 @@ const { sequelize } = require("./libs/sequelize/index.js")
 const routerClient = require('./routes/clients/index.js')
 const routerQuestions = require('./routes/questions/index.js')
 const routerUser = require('./routes/users/index.js')
-
+const cors = require('cors')
 const app = express()
 
-
+app.use(cors())
 
 const server = app.listen(process.env.PORT || 8081, () => {
     console.log(`Sv en puerto ${server.address().port}`)

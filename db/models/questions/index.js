@@ -41,7 +41,7 @@ const QuestionSchema = {
         allowNull: false,
         type: DataTypes.DATE,
         field: 'updated_at',
-    }
+    },
 }
 
 class Questions extends Model {
@@ -53,9 +53,7 @@ class Questions extends Model {
             sequelize,
             tableName: QUESTIONS_TABLE,
             modelName: 'Questions',
-            timestamp: false,
-            createdAt: 'created_at',
-            updatedAt: 'updated_at'
+            timestamp: false
         }
     }
 }

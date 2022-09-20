@@ -9,6 +9,7 @@ routerQuestions.use(express.json())
 routerQuestions.use(express.urlencoded({ extended: true }))
 routerQuestions.post('/api/questions/new-question',verifyTokenHandler,QuestionsController.generateQuestion)
 routerQuestions.get('/api/questions/all-questions',verifyTokenHandler,QuestionsController.getQuestions)
+routerQuestions.get('/api/questions/all-questions/:clientId',verifyTokenHandler,QuestionsController.getQuestionsByClient)
 routerQuestions.put('/api/questions/modify-question',verifyTokenHandler,QuestionsController.updateQuestions)
 routerQuestions.delete('/api/questions/delete-question',verifyTokenHandler,QuestionsController.deleteQuestions)
 module.exports = routerQuestions

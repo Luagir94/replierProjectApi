@@ -7,5 +7,7 @@ require('dotenv').config()
     dbHost : process.env.DB_HOST,
     dbName : process.env.DB_NAME,
     dbPort : process.env.DB_PORT,
+    urlProduLocal :process.env.URL_LOCAL,
+    urlProduINT :process.env.URL,
 }
 module.exports = config
