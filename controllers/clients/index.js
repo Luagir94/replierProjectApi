@@ -95,17 +95,22 @@ class Clients {
         const token = req.headers.authorization.split(' ')[1]
         try {
             jwt.verify(token, process.env.CLIENT_SECRET, async (err, decoded) => {
-                const verifyUser = await models.User.findByPk(decoded.data.id)
-                if (verifyUser) {
-                    if (decoded.data) {
-                        const rta = await models.Clients.findAll({ attributes: { exclude: ['createdAt', 'updatedAt'] },include:['questions'] })
-                        const dataToSend = rta.map(x => x.dataValues)
-                        res.status(200).send(dataToSend)
-       
-                    } else {
-                        res.status(404).send('Usuario no encontrado.')
+                try {
+                    const verifyUser = await models.User.findByPk(decoded.data.id)
+                    if (verifyUser) {
+                        if (decoded.data) {
+                            const rta = await models.Clients.findAll({ attributes: { exclude: ['createdAt', 'updatedAt'] },include:['questions'] })
+                            const dataToSend = rta.map(x => x.dataValues)
+                            res.status(200).send(dataToSend)
+           
+                        } else {
+                            res.status(404).send('Usuario no encontrado.')
+                        }
                     }
+                } catch (error) {
+                    res.status(500).send('Error en el server, intente mas tarde.')
                 }
+             
 
             })
         } catch (error) {

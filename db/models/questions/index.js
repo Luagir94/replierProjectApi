@@ -54,12 +54,8 @@ class Questions extends Model {
             tableName: QUESTIONS_TABLE,
             modelName: 'Questions',
             timestamp: false,
-            underscored: true,
             createdAt: 'created_at',
-            updatedAt: 'updated_at',
-            title : 'title',
-            answer : 'answer',
-            question: 'question'
+            updatedAt: 'updated_at'
         }
     }
 }

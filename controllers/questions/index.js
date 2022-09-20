@@ -3,9 +3,12 @@ const { models } = require('../../libs/sequelize');
 const { validateCreateUser, validatePassword } = require('../../utils/schemas/users');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { QueryTypes } = require('sequelize')
 require('dotenv').config()
 const cloudinary = require('../../utils/middlewares/cloudinaryUpload')
 const { v4: uuidv4 } = require('uuid');
+const sequelize = require('../../libs/sequelize');
+
 class Questions {
     constructor() { }
     async generateQuestion(req, res, next) {
@@ -18,12 +21,9 @@ class Questions {
 
             try {
                 if (verifyUser) {
-    
-       
-                    
-                    
-                    const newUser = await models.Questions.create({...req.body,"id": uuidv4()})
-                    res.status(201).send({ msg: 'Preguenta creado con exito.', newUser })
+
+                    const newUser = await sequelize.query(`INSERT INTO "questions" VALUES ('${uuidv4()}','${title}','${question}','${answer}','${clientId}','${new Date().toUTCString()}','${new Date().toUTCString()}')`)
+                    res.status(201).send({ msg: 'Preguenta creado con exito.' })
                 } else {
                     res.status(401).send('Credenciales incorrectas');
                 }
@@ -47,15 +47,16 @@ class Questions {
             const verifyUser = await models.User.findByPk(decoded.data.id)
             try {
                 if (verifyUser) {
-                    const question = await models.Questions.findByPk(id)
-                    
-                    const newEntrie = {
-                        title,
-                        question,
-                        answer
+                    const queryCreator = ()=>{
+                        const query = []
+                        if (title) query.push(`title='${title}'`)
+                        if (question) query.push(`question='${question}'`)
+                        if (answer) query.push(`answer='${answer}'`)
+                        query.push(`updated_at='${new Date().toUTCString()}'`)
+                        return query.join()
                     }
-                    const updatedQ = await question.update(newEntrie)
-                    res.status(201).send({ msg: 'Cliente actualizado con exito.', updatedQ })
+                    const newUser = await sequelize.query(`UPDATE  "questions" SET ${queryCreator()} WHERE id='${id}'`)
+                    res.status(201).send({ msg: 'Cliente actualizado con exito.' })
                 } else {
                     res.status(401).send('Credenciales incorrectas');
                 }
@@ -73,9 +74,10 @@ class Questions {
                 const verifyUser = await models.User.findByPk(decoded.data.id)
                 if (verifyUser) {
                     if (decoded.data) {
-                        const rta = await models.Questions.findAll()
-                        const dataToSend = rta.map(x => x.dataValues)
-                        res.status(200).send(dataToSend)
+                        // const rta = await models.Questions.findAll()
+                        // const dataToSend = rta.map(x => x.dataValues)
+                        const newUser = await sequelize.query("SELECT * FROM questions", { type: QueryTypes.SELECT })
+                        res.status(200).send(newUser)
 
                     } else {
                         res.status(404).send('Usuario no encontrado.')
@@ -92,16 +94,21 @@ class Questions {
         const { error, value } = validateCreateUser(req.body);
         const token = req.headers.authorization.split(' ')[1]
         jwt.verify(token, process.env.CLIENT_SECRET, async (err, decoded) => {
-            const verifyUser = await models.User.findByPk(decoded.data.id)
-            console.log(decoded.data.role);
-            if (decoded.data.role === 'admin' && verifyUser) {
-                const questionToDestroy = await models.Questions.findByPk(id)
-                questionToDestroy.destroy()
-                res.status(200).send('Usuario eliminado correctamente.')
-
-            } else {
-                res.status(401).send('Credenciales incorrectas.');
+            try {
+                const verifyUser = await models.User.findByPk(decoded.data.id)
+                console.log(decoded.data.role);
+                if (decoded.data.role === 'admin' && verifyUser) {
+                    const newUser = await sequelize.query(`DELETE FROM questions WHERE id='${id}'`)
+              
+                    res.status(200).send('Usuario eliminado correctamente.')
+    
+                } else {
+                    res.status(401).send('Credenciales incorrectas.');
+                }
+            } catch (error) {
+                console.log(error);
             }
+        
         })
     }
 }
